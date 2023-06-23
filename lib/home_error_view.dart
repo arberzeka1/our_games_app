@@ -6,7 +6,10 @@ class HomeErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('Failed to fetch todos.'),
+      child: Text(
+        'Failed to fetch Games.',
+        style: TextStyle(color: Colors.white),
+      ),
     );
   }
 }

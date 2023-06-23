@@ -100,206 +100,234 @@ class _GameState extends State<Game> {
                     onRefresh: () async {
                       context.read<GamesBloc>().add(const GameRefresh());
                     },
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.75,
-                      child: ListView.builder(
-                        // shrinkWrap: true,
-                        controller: _scrollController,
-                        itemCount: state.hasReachedMax
-                            ? state.games!.length
-                            : state.games!.length + 1,
-                        itemBuilder: (context, index) {
-                          return index >= state.games!.length
-                              ? const Center(
-                                  child: CustomCircularProgressIndicator(),
-                                )
-                              : Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => GameDetails(
-                                              game: state.games![index]),
-                                        ),
-                                      );
-                                    },
-                                    child: SizedBox(
-                                      height: 120,
-                                      child: Stack(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 20.0),
-                                            child: Align(
-                                              alignment: Alignment.bottomCenter,
-                                              child: Container(
-                                                height: 100,
-                                                width: double.infinity,
-                                                decoration: BoxDecoration(
-                                                  color:
-                                                      const Color(0xff263343),
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                ),
-                                                child: Padding(
+                    child: state.games!.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'No DATA in List',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          )
+                        : SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.75,
+                            child: ListView.builder(
+                              // shrinkWrap: true,
+                              controller: _scrollController,
+                              itemCount: state.hasReachedMax
+                                  ? state.games!.length
+                                  : state.games!.length + 1,
+                              itemBuilder: (context, index) {
+                                return index >= state.games!.length
+                                    ? const Center(
+                                        child:
+                                            CustomCircularProgressIndicator(),
+                                      )
+                                    : Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    GameDetails(
+                                                        game: state
+                                                            .games![index]),
+                                              ),
+                                            );
+                                          },
+                                          child: SizedBox(
+                                            height: 120,
+                                            child: Stack(
+                                              children: [
+                                                Padding(
                                                   padding:
                                                       const EdgeInsets.only(
-                                                          left: 100.0),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      const SizedBox(
-                                                        height: 10,
+                                                          left: 20.0),
+                                                  child: Align(
+                                                    alignment:
+                                                        Alignment.bottomCenter,
+                                                    child: Container(
+                                                      height: 100,
+                                                      width: double.infinity,
+                                                      decoration: BoxDecoration(
+                                                        color: const Color(
+                                                            0xff263343),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(12),
                                                       ),
-                                                      Text(
-                                                        state.games![index]
-                                                            .title!,
-                                                        overflow:
-                                                            TextOverflow.fade,
-                                                        maxLines: 1,
-                                                        style:
-                                                            GoogleFonts.manrope(
-                                                          color: Colors.white,
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.w800,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(height: 5),
-                                                      RatingBar.builder(
-                                                        initialRating:
-                                                            double.parse(state
-                                                                    .games![
-                                                                        index]
-                                                                    .dealRating!) /
-                                                                2,
-                                                        minRating: 0,
-                                                        direction:
-                                                            Axis.horizontal,
-                                                        allowHalfRating: true,
-                                                        itemCount: 5,
-                                                        itemSize: 13,
-                                                        unratedColor:
-                                                            Colors.white,
-                                                        itemPadding:
+                                                      child: Padding(
+                                                        padding:
                                                             const EdgeInsets
-                                                                .symmetric(
-                                                          horizontal: 2.0,
-                                                        ),
-                                                        itemBuilder:
-                                                            (context, _) =>
-                                                                const Icon(
-                                                          Icons.star,
-                                                          color:
-                                                              Color(0xffEBFF01),
-                                                          size: 13,
-                                                        ),
-                                                        onRatingUpdate:
-                                                            (rating) {},
-                                                      ),
-                                                      const SizedBox(
-                                                        height: 10,
-                                                      ),
-                                                      Row(
-                                                        children: [
-                                                          if (state
-                                                                  .games![index]
-                                                                  .isOnSale! ==
-                                                              "1")
+                                                                    .only(
+                                                                left: 100.0),
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            const SizedBox(
+                                                              height: 10,
+                                                            ),
                                                             Text(
-                                                              '${state.games![index].normalPrice!}€',
+                                                              state
+                                                                  .games![index]
+                                                                  .title!,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .fade,
+                                                              maxLines: 1,
                                                               style: GoogleFonts
                                                                   .manrope(
-                                                                color: const Color(
-                                                                    0xff6B7480),
-                                                                fontSize: 10,
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 16,
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .w500,
-                                                                decoration:
-                                                                    TextDecoration
-                                                                        .lineThrough,
-                                                                decorationThickness:
-                                                                    2,
-                                                                decorationStyle:
-                                                                    TextDecorationStyle
-                                                                        .solid,
-                                                                decorationColor:
-                                                                    const Color(
-                                                                        0xff6B7480),
+                                                                        .w800,
                                                               ),
                                                             ),
-                                                          const SizedBox(
-                                                            width: 5,
-                                                          ),
-                                                          Text(
-                                                            state.games![index]
-                                                                        .isOnSale! ==
-                                                                    "1"
-                                                                ? '${state.games![index].salePrice!}€'
-                                                                : '${state.games![index].normalPrice!}€',
-                                                            style: GoogleFonts
-                                                                .manrope(
-                                                              color:
+                                                            const SizedBox(
+                                                                height: 5),
+                                                            RatingBar.builder(
+                                                              initialRating:
+                                                                  double.parse(state
+                                                                          .games![
+                                                                              index]
+                                                                          .steamRatingPercent!) /
+                                                                      20,
+                                                              minRating: 0,
+                                                              direction: Axis
+                                                                  .horizontal,
+                                                              allowHalfRating:
+                                                                  true,
+                                                              itemCount: 5,
+                                                              itemSize: 13,
+                                                              unratedColor:
                                                                   Colors.white,
-                                                              fontSize: 13,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
+                                                              itemPadding:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
+                                                                horizontal: 2.0,
+                                                              ),
+                                                              itemBuilder:
+                                                                  (context,
+                                                                          _) =>
+                                                                      const Icon(
+                                                                Icons.star,
+                                                                color: Color(
+                                                                    0xffEBFF01),
+                                                                size: 13,
+                                                              ),
+                                                              onRatingUpdate:
+                                                                  (rating) {},
                                                             ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Positioned(
-                                            top: -20,
-                                            left: -20,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(20.0),
-                                              child: SizedBox(
-                                                height: 100,
-                                                width: 100,
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                  child: CachedNetworkImage(
-                                                    imageUrl: state
-                                                        .games![index].thumb!,
-                                                    fit: BoxFit.cover,
-                                                    progressIndicatorBuilder:
-                                                        (context, url,
-                                                                progress) =>
-                                                            Center(
-                                                      child:
-                                                          CircularProgressIndicator(
-                                                        value:
-                                                            progress.progress,
+                                                            const SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                if (state
+                                                                        .games![
+                                                                            index]
+                                                                        .isOnSale! ==
+                                                                    "1")
+                                                                  Text(
+                                                                    '${state.games![index].normalPrice!}€',
+                                                                    style: GoogleFonts
+                                                                        .manrope(
+                                                                      color: const Color(
+                                                                          0xff6B7480),
+                                                                      fontSize:
+                                                                          10,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w500,
+                                                                      decoration:
+                                                                          TextDecoration
+                                                                              .lineThrough,
+                                                                      decorationThickness:
+                                                                          2,
+                                                                      decorationStyle:
+                                                                          TextDecorationStyle
+                                                                              .solid,
+                                                                      decorationColor:
+                                                                          const Color(
+                                                                              0xff6B7480),
+                                                                    ),
+                                                                  ),
+                                                                const SizedBox(
+                                                                  width: 5,
+                                                                ),
+                                                                Text(
+                                                                  state.games![index]
+                                                                              .isOnSale! ==
+                                                                          "1"
+                                                                      ? '${state.games![index].salePrice!}€'
+                                                                      : '${state.games![index].normalPrice!}€',
+                                                                  style: GoogleFonts
+                                                                      .manrope(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontSize:
+                                                                        13,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w500,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                              ),
+                                                Positioned(
+                                                  top: -20,
+                                                  left: -20,
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            20.0),
+                                                    child: SizedBox(
+                                                      height: 100,
+                                                      width: 100,
+                                                      child: ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(12),
+                                                        child:
+                                                            CachedNetworkImage(
+                                                          imageUrl: state
+                                                              .games![index]
+                                                              .thumb!,
+                                                          fit: BoxFit.cover,
+                                                          progressIndicatorBuilder:
+                                                              (context, url,
+                                                                      progress) =>
+                                                                  Center(
+                                                            child:
+                                                                CircularProgressIndicator(
+                                                              value: progress
+                                                                  .progress,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
                                             ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ); //buildTodo(context, state, index);
-                        },
-                      ),
-                    ),
+                                          ),
+                                        ),
+                                      ); //buildTodo(context, state, index);
+                              },
+                            ),
+                          ),
                   );
                 } else {
                   return const HomeErrorView();

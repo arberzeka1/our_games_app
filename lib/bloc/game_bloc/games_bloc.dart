@@ -52,7 +52,7 @@ class GamesBloc extends Bloc<GamesEvents, GamesState> {
         );
       }
     } catch (e) {
-      debugPrint("[HATA] [TodoBloc] [_onTodoFetch] --> $e");
+      debugPrint("[GameBloc] OR [_onGamesFetch] --> $e");
       return emit(state.copyWith(status: GameStatus.error));
     }
   }
