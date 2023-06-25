@@ -11,9 +11,13 @@ class GameService {
   final Dio _dio = Dio();
 
   Future<List<GameModel>> fetchGames(
-      [int start = 0, int pageNumber = 0, int pageSize = 10]) async {
+      {int start = 0,
+      int pageNumber = 0,
+      int pageSize = 10,
+      int upperPrice = 50,
+      int lowerPrice = 0}) async {
     String url =
-        '${_constants.baseUrl}&pageNumber=$pageNumber&pageSize=${_constants.pageSize}';
+        '${_constants.baseUrl}&pageNumber=$pageNumber&pageSize=${_constants.pageSize}&lowerPrice=$lowerPrice&upperPrice=$upperPrice';
 
     final response = await _dio.get(url);
 

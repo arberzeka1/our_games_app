@@ -12,6 +12,7 @@ part 'games_events.dart';
 part 'games_state.dart';
 
 class GamesBloc extends Bloc<GamesEvents, GamesState> {
+  int page = 0;
   GamesBloc() : super(const GamesState()) {
     on<GameFetch>(
       _onGameFetch,
@@ -28,26 +29,46 @@ class GamesBloc extends Bloc<GamesEvents, GamesState> {
     GameFetch event,
     Emitter<GamesState> emitter,
   ) async {
+    print("FFF");
     try {
       if (state.hasReachedMax) return;
+      print("AA");
+
       if (state.status == GameStatus.initial) {
-        final games = await _gameService.fetchGames();
+        final games = await _gameService.fetchGames(
+            pageNumber: page, upperPrice: state.to, lowerPrice: state.from);
         return emit(
           state.copyWith(
-            games: games,
-            status: GameStatus.success,
-            hasReachedMax: false,
-          ),
+              games: games,
+              status: GameStatus.success,
+              hasReachedMax: false,
+              from: state.to,
+              to: state.from),
         );
       }
-      final games = await _gameService.fetchGames(state.games!.length);
+      print("PPPP");
+
+      page++;
+      print('Fetch here ${state.to} And ${state.from}}');
+      await Future.delayed(const Duration(seconds: 1));
+
+      final games = await _gameService.fetchGames(
+        pageNumber: page,
+      );
+      print('PAge number ${games} $page');
+
+      await Future.delayed(const Duration(seconds: 1));
+
       if (games.isEmpty) {
+        print("Empty");
         return emit(state.copyWith(hasReachedMax: true));
       } else {
         return emit(
           state.copyWith(
             games: List.of(state.games!)..addAll(games),
             hasReachedMax: false,
+            from: state.from,
+            to: state.to,
           ),
         );
       }
@@ -61,6 +82,6 @@ class GamesBloc extends Bloc<GamesEvents, GamesState> {
       GameRefresh event, Emitter<GamesState> emit) async {
     emit(const GamesState());
     await Future.delayed(const Duration(seconds: 1));
-    add(const GameFetch());
+    add(GameFetch());
   }
 }

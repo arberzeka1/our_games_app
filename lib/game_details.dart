@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:our_games_task/models/game_model.dart';
 import 'package:our_games_task/widgets/store_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class GameDetails extends StatefulWidget {
   final GameModel game;
@@ -24,10 +25,19 @@ class _GameDetailsState extends State<GameDetails> {
     "images/ali_express.png",
   ];
   final List<String> storeName = ["Amazon", "Ebay", "Origin", "Ali"];
+  final Uri _url = Uri.parse('https://www.metacritic.com/');
+
   String stringDate(int lastChange) {
     DateTime dt = DateTime.fromMillisecondsSinceEpoch(lastChange * 1000);
     String stringDate = DateFormat.yMd().format(dt);
     return stringDate;
+  }
+
+  Future<void> _launchUrl(String metacriticLink) async {
+    if (!await launchUrl(
+        Uri.parse('https://www.metacritic.com$metacriticLink'))) {
+      throw Exception('Could not launch $_url');
+    }
   }
 
   @override
@@ -221,39 +231,61 @@ class _GameDetailsState extends State<GameDetails> {
               )
             ],
           ),
-          Container(
-            height: 50,
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              color: Color(0xffEBFF01),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            child: Row(
-              children: [
-                RatingBar.builder(
-                  initialRating:
-                      double.parse(widget.game.steamRatingPercent!) / 20,
-                  minRating: 0,
-                  direction: Axis.horizontal,
-                  allowHalfRating: true,
-                  itemCount: 5,
-                  itemSize: 13,
-                  unratedColor: Colors.black45,
-                  itemPadding: const EdgeInsets.symmetric(
-                    horizontal: 2.0,
-                  ),
-                  itemBuilder: (context, _) => const Icon(
-                    Icons.star,
-                    color: Colors.black,
-                    size: 13,
-                  ),
-                  onRatingUpdate: (rating) {},
+          GestureDetector(
+            onTap: () {
+              _launchUrl(widget.game.metacriticLink!);
+            },
+            child: Container(
+              height: 50,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Color(0xffEBFF01),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
                 ),
-                Text("${widget.game.steamRatingPercent!}/100")
-              ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  RatingBar.builder(
+                    initialRating:
+                        double.parse(widget.game.steamRatingPercent!) / 20,
+                    minRating: 0,
+                    direction: Axis.horizontal,
+                    allowHalfRating: true,
+                    itemCount: 5,
+                    itemSize: 13,
+                    unratedColor: Colors.grey.shade300,
+                    itemPadding: const EdgeInsets.symmetric(
+                      horizontal: 2.0,
+                    ),
+                    itemBuilder: (context, _) => const Icon(
+                      Icons.star_border_purple500,
+                      color: Colors.black,
+                      size: 13,
+                    ),
+                    onRatingUpdate: (rating) {},
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Text("${widget.game.steamRatingPercent!}/100"),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  if (widget.game.steamRatingText != null)
+                    Text('${widget.game.steamRatingText}'),
+                  const SizedBox(
+                    width: 5,
+                  ),
+                  const Icon(
+                    Icons.arrow_forward,
+                    size: 24,
+                    color: Colors.black,
+                  ),
+                ],
+              ),
             ),
           ),
         ],

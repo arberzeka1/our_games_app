@@ -16,9 +16,6 @@ class GameRefresh extends GamesEvents {
   const GameRefresh();
 }
 
-// class FilterGamesEvent extends GamesEvents {
-//   final GameModel gameModel;
-//   FilterGamesEvent({
-//     required this.gameModel,
-//   });
+// class GameFilter extends GamesEvents {
+//   const GameFilter();
 // }
