@@ -9,13 +9,21 @@ abstract class GamesEvents extends Equatable {
 }
 
 class GameFetch extends GamesEvents {
-  const GameFetch();
+  final int from;
+  final int to;
+  final bool fromFilter;
+
+  const GameFetch({this.from = 0, this.to = 50, this.fromFilter = false});
 }
 
 class GameRefresh extends GamesEvents {
   const GameRefresh();
 }
 
-// class GameFilter extends GamesEvents {
-//   const GameFilter();
-// }
+class GameFilter extends GamesEvents {
+  final int from;
+  final int to;
+  final bool fromFilter;
+
+  const GameFilter({this.from = 0, this.to = 50, this.fromFilter = false});
+}

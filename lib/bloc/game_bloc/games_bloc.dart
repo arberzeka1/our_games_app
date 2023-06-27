@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart' show debugPrint, immutable;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
 import 'package:our_games_task/bloc/enum/game_status.dart';
 import 'package:our_games_task/models/game_model.dart';
 import 'package:our_games_task/service/game_service.dart';
@@ -22,53 +24,108 @@ class GamesBloc extends Bloc<GamesEvents, GamesState> {
       _onGameRefresh,
       transformer: droppable(),
     );
+    on<GameFilter>(
+      _onGameFilter,
+      transformer: droppable(),
+    );
   }
   final GameService _gameService = GameService.instance;
 
   Future<void> _onGameFetch(
     GameFetch event,
-    Emitter<GamesState> emitter,
+    Emitter<GamesState> emit,
   ) async {
-    print("FFF");
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      List<GameModel> games = [];
+      await getGames().then((value) {
+        games = value;
+      });
+      return emit(
+        state.copyWith(
+          games: games,
+          status: GameStatus.success,
+          hasReachedMax: false,
+        ),
+      );
+    }
     try {
       if (state.hasReachedMax) return;
-      print("AA");
-
       if (state.status == GameStatus.initial) {
         final games = await _gameService.fetchGames(
-            pageNumber: page, upperPrice: state.to, lowerPrice: state.from);
+          lowerPrice: event.from,
+          upperPrice: event.to,
+        );
+        saveNotes(games);
         return emit(
           state.copyWith(
-              games: games,
-              status: GameStatus.success,
-              hasReachedMax: false,
-              from: state.to,
-              to: state.from),
+            games: games,
+            status: GameStatus.success,
+            hasReachedMax: false,
+            pageNumber: page,
+          ),
         );
       }
-      print("PPPP");
 
       page++;
-      print('Fetch here ${state.to} And ${state.from}}');
-      await Future.delayed(const Duration(seconds: 1));
-
       final games = await _gameService.fetchGames(
         pageNumber: page,
+        lowerPrice: event.from,
+        upperPrice: event.to,
       );
-      print('PAge number ${games} $page');
 
-      await Future.delayed(const Duration(seconds: 1));
-
+      saveNotes(games);
       if (games.isEmpty) {
-        print("Empty");
         return emit(state.copyWith(hasReachedMax: true));
       } else {
         return emit(
           state.copyWith(
             games: List.of(state.games!)..addAll(games),
             hasReachedMax: false,
-            from: state.from,
-            to: state.to,
+            pageNumber: page,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint("[GameBloc] OR [_onGamesFetch] --> $e");
+      return emit(state.copyWith(status: GameStatus.error));
+    }
+  }
+
+  Future<void> _onGameFilter(
+    GameFilter event,
+    Emitter<GamesState> emit,
+  ) async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.none) {
+      List<GameModel> games = [];
+      await getGames().then((value) {
+        games = value;
+      });
+      return emit(
+        state.copyWith(
+          games: games,
+          status: GameStatus.success,
+          hasReachedMax: false,
+        ),
+      );
+    }
+    try {
+      if (state.hasReachedMax) return;
+
+      final games = await _gameService.fetchGames(
+        pageNumber: page,
+        upperPrice: event.to,
+        lowerPrice: event.from,
+      );
+
+      if (games.isEmpty) {
+        return emit(state.copyWith(hasReachedMax: true));
+      } else {
+        return emit(
+          state.copyWith(
+            games: List.of(games)..addAll(games),
+            hasReachedMax: false,
           ),
         );
       }
@@ -82,6 +139,30 @@ class GamesBloc extends Bloc<GamesEvents, GamesState> {
       GameRefresh event, Emitter<GamesState> emit) async {
     emit(const GamesState());
     await Future.delayed(const Duration(seconds: 1));
-    add(GameFetch());
+    add(const GameFetch());
+  }
+
+  Future<List<GameModel>> saveNotes(
+    List<GameModel> games,
+  ) async {
+    try {
+      final Box<GameModel> box = await Hive.openBox("GameModelHive");
+      await box.clear();
+      await box.addAll(games);
+      return box.values.toList();
+    } catch (e) {
+      debugPrint("$e");
+      return [];
+    }
+  }
+
+  Future<List<GameModel>> getGames() async {
+    try {
+      final Box<GameModel> box = await Hive.openBox("GameModelHive");
+      return box.values.toList();
+    } catch (e) {
+      debugPrint("$e");
+      return [];
+    }
   }
 }

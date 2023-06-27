@@ -1,61 +1,66 @@
-import 'package:equatable/equatable.dart';
+import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'game_model.g.dart';
 
 @JsonSerializable()
-class GameModel extends Equatable {
+@HiveType(typeId: 0)
+class GameModel extends HiveObject {
+  @HiveField(0)
   @JsonKey(name: "internalName")
   String? internalName;
-
+  @HiveField(1)
   @JsonKey(name: "title")
   String? title;
-
+  @HiveField(2)
   @JsonKey(name: "metacriticLink")
   String? metacriticLink;
-
+  @HiveField(3)
   @JsonKey(name: "dealID")
   String? dealID;
-
+  @HiveField(4)
   @JsonKey(name: "storeID")
   String? storeID;
-
+  @HiveField(5)
   @JsonKey(name: "gameID")
   String? gameID;
-
+  @HiveField(6)
   @JsonKey(name: "salePrice")
   String? salePrice;
-
+  @HiveField(7)
   @JsonKey(name: "normalPrice")
   String? normalPrice;
-
+  @HiveField(8)
   @JsonKey(name: "isOnSale")
   String? isOnSale;
-
+  @HiveField(9)
   @JsonKey(name: "savings")
   String? savings;
-
+  @HiveField(10)
   @JsonKey(name: "metacriticScore")
   String? metacriticScore;
-
+  @HiveField(11)
   @JsonKey(name: "steamRatingText")
   String? steamRatingText;
-
+  @HiveField(12)
   @JsonKey(name: "steamRatingPercent")
   String? steamRatingPercent;
-
+  @HiveField(13)
   @JsonKey(name: "steamRatingCount")
   String? steamRatingCount;
-
+  @HiveField(14)
   @JsonKey(name: "steamAppID")
   String? steamAppID;
-
+  @HiveField(15)
   @JsonKey(name: "releaseDate")
   int? releaseDate;
+  @HiveField(16)
   @JsonKey(name: "lastChange")
   int? lastChange;
+  @HiveField(17)
   @JsonKey(name: "dealRating")
   String? dealRating;
+  @HiveField(18)
   @JsonKey(name: "thumb")
   String? thumb;
 

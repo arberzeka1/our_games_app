@@ -14,8 +14,8 @@ class GameService {
       {int start = 0,
       int pageNumber = 0,
       int pageSize = 10,
-      int upperPrice = 50,
-      int lowerPrice = 0}) async {
+      int? upperPrice,
+      int? lowerPrice}) async {
     String url =
         '${_constants.baseUrl}&pageNumber=$pageNumber&pageSize=${_constants.pageSize}&lowerPrice=$lowerPrice&upperPrice=$upperPrice';
 

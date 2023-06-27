@@ -5,11 +5,11 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:our_games_task/bloc/enum/game_status.dart';
 import 'package:our_games_task/bloc/game_bloc/games_bloc.dart';
-import 'package:our_games_task/filter_screen.dart';
-import 'package:our_games_task/game_details.dart';
-import 'package:our_games_task/home_error_view.dart';
+import 'package:our_games_task/ui/filter_screen.dart';
+import 'package:our_games_task/ui/game_details.dart';
+import 'package:our_games_task/widgets/home_error_view.dart';
 
-import 'custom_circular_progress_indicator.dart';
+import '../widgets/custom_circular_progress_indicator.dart';
 
 class Game extends StatefulWidget {
   const Game({Key? key}) : super(key: key);
@@ -36,23 +36,20 @@ class _GameState extends State<Game> {
   }
 
   void _onScroll() {
-    // print("on scroll");//
     if (!_scrollController.hasClients) return;
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.position.pixels;
     if (currentScroll == maxScroll) {
-      print('pss');
       context.read<GamesBloc>().add(const GameFetch());
     }
   }
 
-  void callFilter() {
-    context.read<GamesBloc>().add(const GameFetch());
+  void callFilter(int from, int to) {
+    context.read<GamesBloc>().add(GameFilter(from: from, to: to));
   }
 
   @override
   Widget build(BuildContext context) {
-    print('Build');
     return Scaffold(
       backgroundColor: const Color(0xff1D2635),
       body: Padding(
@@ -81,7 +78,9 @@ class _GameState extends State<Game> {
                             MaterialPageRoute(builder: (BuildContext context) {
                           return FilterGames(
                             successCallback: (int? from, int? to) {
-                              callFilter();
+                              setState(() {
+                                callFilter(from!, to!);
+                              });
                             },
                           );
                         }));
@@ -123,7 +122,7 @@ class _GameState extends State<Game> {
                     child: state.games!.isEmpty
                         ? const Center(
                             child: Text(
-                              'No DATA in List',
+                              'No data in List',
                               style: TextStyle(color: Colors.white),
                             ),
                           )
@@ -344,7 +343,7 @@ class _GameState extends State<Game> {
                                             ),
                                           ),
                                         ),
-                                      ); //buildTodo(context, state, index);
+                                      );
                               },
                             ),
                           ),
@@ -357,8 +356,6 @@ class _GameState extends State<Game> {
           ],
         ),
       ),
-
-      // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
