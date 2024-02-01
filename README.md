@@ -1,7 +1,6 @@
 # our_games_task
 
-Our Game Task
-# Crispy Bacon
+Our Game App
 
 ## Description
 
